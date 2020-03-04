@@ -4,6 +4,14 @@
  * and open the template in the editor.
  */
 package Formularios;
+
+import Clases.AlumnosDB;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  * Archivo: frmAlumnos
  * Creado por: Omar Toxqui Tolama
@@ -24,6 +32,25 @@ public class frmAlumnos extends javax.swing.JFrame {
     public frmAlumnos() {
         initComponents();
         bloquear();
+        CargarTabla();
+    }
+    
+    //Objeto de la clase AlumnoSDB
+    
+    AlumnosDB objAlumnosDB = new AlumnosDB();
+    
+    int Matricula;
+    String Nombre;
+    
+    
+    //Limpiar datos
+    void Limpiar(){
+        txtMat.setText("");
+        txtNombre.setText("");
+        txtApe.setText("");
+        txtEdad.setText("");
+        txtTel.setText("");
+        cbCarrera.setSelectedIndex(0);
     }
     
     //Funcion para bloquear campos
@@ -35,7 +62,22 @@ public class frmAlumnos extends javax.swing.JFrame {
         cbCarrera.setEnabled(false);
         btnGuardar.setEnabled(false);
         btnModificar.setEnabled(false);
+        btnEliminar.setEnabled(false);
         btnCancelar.setEnabled(false);
+        btnNuevo.setEnabled(true);
+    }
+    
+     //Funcion para bloquear campos
+    void desbloquear2(){
+        txtNombre.setEnabled(true);
+        txtApe.setEnabled(true);
+        txtEdad.setEnabled(true);
+        txtTel.setEnabled(true);
+        cbCarrera.setEnabled(true);
+        btnNuevo.setEnabled(false);
+        btnModificar.setEnabled(true);
+        btnEliminar.setEnabled(true);
+        btnCancelar.setEnabled(true);
     }
     
     //Funcion para desbloquear campos
@@ -46,7 +88,35 @@ public class frmAlumnos extends javax.swing.JFrame {
         txtTel.setEnabled(true);
         cbCarrera.setEnabled(true);
         btnGuardar.setEnabled(true);
+        btnNuevo.setEnabled(true);
         btnCancelar.setEnabled(true);
+    }
+    
+    public void CargarTabla(){
+        DefaultTableModel modelo = (DefaultTableModel) tbAlumnos.getModel();
+        
+        modelo.setRowCount(0);
+        
+        try{
+            ResultSet consultar = objAlumnosDB.consultar();
+            
+            while(consultar.next()){
+                Vector v = new Vector();
+                
+                v.add(consultar.getInt(1));
+                v.add(consultar.getString(2));
+                v.add(consultar.getString(3));
+                v.add(consultar.getString(4));
+                v.add(consultar.getString(5));
+                v.add(consultar.getString(6));
+                
+                modelo.addRow(v);
+                tbAlumnos.setModel(modelo);
+            }
+            
+        }catch(SQLException e){
+            System.out.println(e);
+        }
     }
 
     /**
@@ -76,6 +146,7 @@ public class frmAlumnos extends javax.swing.JFrame {
         btnGuardar = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbAlumnos = new javax.swing.JTable();
@@ -98,7 +169,7 @@ public class frmAlumnos extends javax.swing.JFrame {
 
         txtMat.setEnabled(false);
 
-        cbCarrera.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Desarrollador de Sistemas y Redes", "Diseño Gráfico Digital", "Asistente Ejecutivo e Informática" }));
+        cbCarrera.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Desarrollador de Sistemas", "Redes CCNA", "Asistente Ejecutivo" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -165,6 +236,11 @@ public class frmAlumnos extends javax.swing.JFrame {
         });
 
         btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
 
         btnModificar.setText("Modificar");
         btnModificar.addActionListener(new java.awt.event.ActionListener() {
@@ -180,6 +256,13 @@ public class frmAlumnos extends javax.swing.JFrame {
             }
         });
 
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -187,6 +270,7 @@ public class frmAlumnos extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnNuevo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -205,9 +289,10 @@ public class frmAlumnos extends javax.swing.JFrame {
                 .addComponent(btnGuardar)
                 .addGap(18, 18, 18)
                 .addComponent(btnModificar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                .addComponent(btnEliminar)
                 .addGap(18, 18, 18)
-                .addComponent(btnCancelar)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addComponent(btnCancelar))
         );
 
         jLabel7.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
@@ -215,10 +300,7 @@ public class frmAlumnos extends javax.swing.JFrame {
 
         tbAlumnos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
                 "Matricula", "Nombre", "Apellidos", "Edad", "Telefono", "Carrera"
@@ -230,6 +312,11 @@ public class frmAlumnos extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tbAlumnos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbAlumnosMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tbAlumnos);
@@ -260,7 +347,7 @@ public class frmAlumnos extends javax.swing.JFrame {
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(27, 27, 27)
                                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 44, Short.MAX_VALUE)))
+                        .addGap(0, 45, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -275,7 +362,7 @@ public class frmAlumnos extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
+                        .addGap(30, 30, 30)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
@@ -286,7 +373,19 @@ public class frmAlumnos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-        // TODO add your handling code here:
+        //Modificacion de un registro
+         int seleccion = cbCarrera.getSelectedIndex();
+         String Carrera = (String) cbCarrera.getItemAt(seleccion);
+        
+         boolean respuesta = objAlumnosDB.Actualizar(Integer.parseInt(txtMat.getText()), txtNombre.getText(), txtApe.getText(), Integer.parseInt(txtEdad.getText()) , txtTel.getText(), Carrera);
+        if(respuesta){
+            JOptionPane.showMessageDialog( null, "Actualización exitosa!");
+            CargarTabla();
+             bloquear();
+                Limpiar();
+        }else{
+            JOptionPane.showMessageDialog( null, "Error Algo anda mal!");
+        }
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -297,7 +396,63 @@ public class frmAlumnos extends javax.swing.JFrame {
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         //Llamamos a la funcion desbloquear
         desbloquear();
+        Limpiar();
     }//GEN-LAST:event_btnNuevoActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        //Comprobamos que los campos esten llenos
+        int selectCarrera= cbCarrera.getSelectedIndex();
+        String Carrera = (String) cbCarrera.getItemAt(selectCarrera);
+        System.out.println(Carrera);
+        if(txtNombre.getText().equals("") || txtApe.getText().equals("") || txtEdad.getText().equals("")|| txtTel.getText().equals("")){
+            JOptionPane.showMessageDialog(null,"Faltan datos por insertar","Error",JOptionPane.ERROR_MESSAGE);
+        }else{
+            //Codigo para la insercion en la tabla
+            boolean respuesta = objAlumnosDB.insertar(txtNombre.getText(), txtApe.getText(), Integer.parseInt(txtEdad.getText()), txtTel.getText(),Carrera);
+            if(respuesta){
+                JOptionPane.showMessageDialog(null, "Insercion exitosa");
+                CargarTabla();
+                 bloquear();
+                Limpiar();
+            }else{
+                JOptionPane.showMessageDialog(null, "Error al insertar registro","Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        //Eliminacion de un registro de la tabla alumnos
+        int confirmacion;
+        confirmacion = JOptionPane.showConfirmDialog(null, "Desea eliminar a"+Nombre+"?", "Confirmar?", JOptionPane.INFORMATION_MESSAGE);
+        if(confirmacion == 0){
+            boolean respuesta = objAlumnosDB.Eliminar(Integer.parseInt(txtMat.getText()));
+            
+            if(respuesta){
+                JOptionPane.showMessageDialog(null, "Dato eliminado!");
+                CargarTabla();
+                bloquear();
+                Limpiar();
+            }else{
+             JOptionPane.showMessageDialog(null,"Error al eliminar");
+            }            
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void tbAlumnosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbAlumnosMouseClicked
+        
+        desbloquear2();
+        
+        //Asignar valores de la tabla a los cuaros de texto
+        
+        int seleccion = tbAlumnos.getSelectedRow();
+        txtMat.setText(String.valueOf(tbAlumnos.getValueAt(seleccion, 0)));
+        Nombre = String.valueOf(tbAlumnos.getValueAt(seleccion, 1));
+        txtNombre.setText(String.valueOf(tbAlumnos.getValueAt(seleccion, 1)));
+        txtApe.setText(String.valueOf(tbAlumnos.getValueAt(seleccion, 2)));
+        txtEdad.setText(String.valueOf(tbAlumnos.getValueAt(seleccion, 3)));
+        txtTel.setText(String.valueOf(tbAlumnos.getValueAt(seleccion, 4)));
+        cbCarrera.setSelectedItem(tbAlumnos.getValueAt(seleccion, 5));
+    }//GEN-LAST:event_tbAlumnosMouseClicked
 
     /**
      * @param args the command line arguments
@@ -336,6 +491,7 @@ public class frmAlumnos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnNuevo;
