@@ -14,7 +14,7 @@ package Formularios;
 
 /**
  *
- * @author Programer
+ * @author OmarTox
  */
 public class frmAlumnos extends javax.swing.JFrame {
 

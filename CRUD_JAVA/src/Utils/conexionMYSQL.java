@@ -5,10 +5,39 @@
  */
 package Utils;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 /**
  *
  * @author Programer
  */
 public class conexionMYSQL {
+
+    /**
+     * @param args the command line arguments
+     */
+ 
+    
+    public static Connection getConexion(){
+       Connection conexion = null;
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+                 
+            conexion = DriverManager.getConnection("jdbc:mysql://localhost/escuela","root","");
+            
+            System.out.println("Conexion Satisfactoria");
+            
+        }catch(Exception ex){
+            System.out.println( "error al conectar"+ ex.getMessage());
+        }
+        return conexion;
+    }
+    
+    
+    public static void main(String[] args) {
+        // TODO code application logic here
+        getConexion();
+    }
     
 }
